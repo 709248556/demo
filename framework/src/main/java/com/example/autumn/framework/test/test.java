@@ -7,7 +7,8 @@ package com.example.autumn.framework.test;
  **/
 public class test {
     public static void main(String[] args) {
-        Dog dog = (String food) -> {System.out.println("-------------"+ food); return food;};
-        dog.eat("牛肉");
+        People people  = new People();
+        people.hello(Hello::hello);
+        people.hello(Hello::nothing);
     }
 }

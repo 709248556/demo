@@ -1,0 +1,128 @@
+server:
+  port: 8101
+  tomcat:
+    uri-encoding: UTF-8
+    max-threads: 1000
+    max-connections: 20000
+    accept-count: 1000
+    max-http-post-size: 524288000
+spring:
+  application:
+    name: zjsm-sp-web-admin
+  datasource:
+    url: jdbc:mysql://192.168.0.50:3306/zjsm-sp?characterEncoding=UTF-8&useSSL=false&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true&serverTimezone=GMT%2b8
+    username: test
+    password: 123456
+    max-active: 50
+  redis:
+    host: 192.168.0.50
+    port: 6379
+    database: 12
+    password: 123456
+  servlet:
+    multipart:
+      maxFileSize: 500MB
+      maxRequestSize: 500MB
+  cache:
+    type: redis
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+
+autumn:
+  web:
+    publish-type: DEBUG
+  schedule:
+    core-pool-size: 10
+    max-pool-size: 100
+    queue-capacity: 300
+  auth:
+    tokenSecret: 1256fwfg
+    rememberMe: true
+    cacheProvider: redis
+    expire: 72000
+    redis:
+      host: 192.168.0.50
+      port: 6379
+      database: 13
+      password: 123456
+  cloud:
+    redis:
+      host: 192.168.0.50
+      port: 6379
+      database: 12
+      password: 123456
+  sms:
+    channel:
+      aliyun:
+        enable: true
+        accessKeyId: LTAI1Pkady58888
+        accessKeySecret: MxpvAwDvw87788885DPntuA
+        defaultSignName: 妙常乐
+      tencent:
+        enable: false
+        appId: 2565455
+        appKey: d33sdsds
+      unicom:
+        enable: false
+        account: aa
+        password: aa
+        agent: octest
+        sign: 【测试】
+        serviceUrl: http://
+    template:
+      userLogin:
+        templateCode: SMS_163852085
+        signName: 妙常乐
+        paramName: code
+        expire: 300
+        messageContent: 您的登录验证码为{code}，5分钟内有效，若非本人操作请忽略。
+      userRegister:
+        templateCode: SMS_163852085
+        signName: 妙常乐
+        paramName: code
+        expire: 300
+        messageContent: 您的注册验证码为{code}，5分钟内有效，若非本人操作请忽略。
+      updatePassword:
+        templateCode: SMS_163852086
+        signName: 妙常乐
+        paramName: code
+        expire: 300
+        messageContent: 您的密码变更验证码为{code}，5分钟内有效，若非本人操作请忽略。
+      commonVerification:
+        templateCode: SMS_163852086
+        signName: 妙常乐
+        paramName: code
+        expire: 300
+        messageContent: 您的验证码为{code}，5分钟内有效，若非本人操作请忽略。
+  storage:
+    client:
+      aliyun:
+        enable: false
+        endpoint: https://oss-cn-shenzhen.aliyuncs.com
+        defaultBucketName: autumn-oos-test
+        accessKeyId: LTAI1778888SK
+        accessKeySecret: MxpvAw589988885DPntuA
+        readBlockSize: 2048
+        writeBlockSize: 2048
+        cannedACL: public-read
+      fastDFS:
+        enable: true
+        endpoint: http://192.168.0.50:80
+        defaultBucketName: group1
+        readBlockSize: 2048
+        writeBlockSize: 2048
+        trackerServers: 192.168.0.50:22122
+        connectTimeoutSeconds: 10
+        networkTimeoutSeconds: 600
+        charset: UTF-8
+        http:
+          trackerHttpPort: 88
+          antiStealToken: false
+          secretKey: FastDFS1234567890
+      local:
+        enable: false
+        endpoint: http://192.168.0.50:8001/
+        defaultBucketName: files
+        readBlockSize: 8092
+        writeBlockSize: 2048
