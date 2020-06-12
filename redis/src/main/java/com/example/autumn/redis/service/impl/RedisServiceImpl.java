@@ -1,15 +1,14 @@
 package com.example.autumn.redis.service.impl;
 
+import com.autumn.domain.entities.Entity;
 import com.autumn.redis.AutumnRedisTemplate;
-import com.example.autumn.redis.base.Score;
+import com.example.autumn.redis.base.ScoreFunction;
 import com.example.autumn.redis.service.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.DefaultTypedTuple;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -20,7 +19,7 @@ import java.util.concurrent.TimeUnit;
  * @create: 2020-06-11 14:46
  **/
 @Service
-public class RedisServiceImpl<T> implements RedisService {
+public class RedisServiceImpl<T extends Entity<Long>> implements RedisService<T> {
 
     @Autowired
     private AutumnRedisTemplate autumnRedisTemplate;
@@ -33,7 +32,7 @@ public class RedisServiceImpl<T> implements RedisService {
      */
     @Override
     public void set(String key, Object value) {
-        autumnRedisTemplate.opsForCustomValue().set(key,value);
+        autumnRedisTemplate.opsForCustomValue().set(key, value);
     }
 
     /**
@@ -44,6 +43,7 @@ public class RedisServiceImpl<T> implements RedisService {
      * @param timeout 超时
      * @param unit    时间单位
      */
+    @Override
     public void set(String key, Object value, long timeout, TimeUnit unit) {
         autumnRedisTemplate.opsForCustomValue().set(key, value, timeout, unit);
     }
@@ -60,27 +60,30 @@ public class RedisServiceImpl<T> implements RedisService {
     }
 
     /**
-     * 获取值并删除
-     *
-     * @param key 键
+     * @Description: 单个添加到ZSort
      */
-    @SuppressWarnings("unchecked")
-    public <T> T getByDelete(String key) {
-        return autumnRedisTemplate.opsForCustomValue().getAndDelete(key);
+    @Override
+    public void zSet(String key, T entity, ScoreFunction<Long> scoreFunction) {
+        autumnRedisTemplate.opsForZSet().add(key, entity, scoreFunction.apply());
     }
 
-    public void zSetList(String key, List<T> list, Score score) {
+    /**
+     * @Description: 添加集合到ZSort
+     */
+    @Override
+    public void zSetList(String key, List<T> list) {
         Set<ZSetOperations.TypedTuple<T>> set = new HashSet<ZSetOperations.TypedTuple<T>>();
-        Iterator<T> iterator = list.iterator();
-        while (iterator.hasNext()){
-            T entity = iterator.next();
-            ZSetOperations.TypedTuple<T> objectTypedTuple1 = new DefaultTypedTuple<T>(entity,score.apply());
-        }
-
-        autumnRedisTemplate.opsForZSet().add(key,set);
+        list.forEach(item->{
+            this.zSet(key,item,item::getId);
+        });
     }
 
-    public void zSet(String key, T entity,double score) {
-        autumnRedisTemplate.opsForZSet().add(key,entity,score);
+
+    /**
+     * @Description: 获取key对应ZSet集合的大小
+     */
+    @Override
+    public Long size(String key) {
+        return autumnRedisTemplate.opsForZSet().size(key);
     }
 }

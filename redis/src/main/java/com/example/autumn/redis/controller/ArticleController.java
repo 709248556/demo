@@ -2,9 +2,9 @@ package com.example.autumn.redis.controller;
 
 
 import com.autumn.mybatis.mapper.PageResult;
-import com.example.autumn.redis.Article.ArticleInput;
-import com.example.autumn.redis.Article.ArticleOutput;
-import com.example.autumn.redis.Article.ArticleSelectDto;
+import com.example.autumn.redis.article.ArticleInput;
+import com.example.autumn.redis.article.ArticleOutput;
+import com.example.autumn.redis.article.ArticleSelectDto;
 import com.example.autumn.redis.base.BaseIdDto;
 import com.example.autumn.redis.service.ArticleService;
 import com.example.autumn.redis.service.RedisService;
@@ -48,7 +48,7 @@ public class ArticleController {
     @ApiResponses(value = {@ApiResponse(code = 1000, message = "OK")})
     @PostMapping("/deleteById")
     public ArticleOutput update(@Valid @RequestBody BaseIdDto input){
-        return articleService.delete(input);
+        return articleService.deleteById(input);
     }
 
     @ApiOperation(value = "获取文章信息详情")
@@ -62,15 +62,7 @@ public class ArticleController {
     @ApiResponses(value = {@ApiResponse(code = 1000, message = "OK")})
     @GetMapping("/list")
     public PageResult<ArticleOutput> queryListForCusPage(@Valid ArticleSelectDto input) {
-    return articleService.queryListForCusPage(input);
+    return articleService.queryListPage(input);
     }
 
-    @ApiOperation(value = "redis")
-    @ApiResponses(value = {@ApiResponse(code = 1000, message = "OK")})
-    @GetMapping("/redis")
-    public String redis(){
-        String s = redisService.get("test");
-        redisService.set("test2","8498649865413");
-        return s;
-    }
 }

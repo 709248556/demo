@@ -2,18 +2,18 @@ package com.example.autumn.redis.service;
 
 import com.autumn.application.service.EditApplicationService;
 import com.autumn.mybatis.mapper.PageResult;
-import com.example.autumn.redis.Article.ArticleInput;
-import com.example.autumn.redis.Article.ArticleOutput;
-import com.example.autumn.redis.Article.ArticleSelectDto;
+import com.example.autumn.redis.article.ArticleInput;
+import com.example.autumn.redis.article.ArticleOutput;
+import com.example.autumn.redis.article.ArticleSelectDto;
 import com.example.autumn.redis.base.BaseIdDto;
 
 /**
- * @Description:
+ * @Description:文章管理服务
  * @author yanlianglong
- * @date 2020-6-9
+ * @date 2020-6-10
  */
 public interface ArticleService extends
-        EditApplicationService<Long, ArticleInput, ArticleInput, ArticleOutput, ArticleOutput> {
+        EditApplicationService<Long, ArticleInput, ArticleInput, ArticleOutput, ArticleOutput>{
 
     /**
      * 删除
@@ -21,7 +21,7 @@ public interface ArticleService extends
      * @param input
      * @return
      */
-    ArticleOutput delete(BaseIdDto input);
+    ArticleOutput deleteById(BaseIdDto input);
 
     /**
      * 分页查找列表
@@ -29,6 +29,7 @@ public interface ArticleService extends
      * @param input
      * @return
      */
-    PageResult<ArticleOutput> queryListForCusPage(ArticleSelectDto input);
+    PageResult<ArticleOutput> queryListPage(ArticleSelectDto input);
+
 }
 

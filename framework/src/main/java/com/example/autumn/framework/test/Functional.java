@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 @FunctionalInterface
 public interface Functional<T, TResult> extends Serializable {
+
     /**
      * 应用
      *
