@@ -14,6 +14,7 @@ import com.example.autumn.redis.entities.Article;
 import com.example.autumn.redis.repositories.ArticleRepository;
 import com.example.autumn.redis.service.ArticleService;
 import com.example.autumn.redis.service.RedisService;
+import com.example.autumn.redis.test.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -70,6 +71,7 @@ public class ArticleServiceImpl extends AbstractSpEditApplicationService<
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ArticleOutput deleteById(BaseIdDto input) {
+        System.out.println("getMethodSign:"+this.getMethodSign());
         Article article = this.getEntity(input.getId());
         this.getRepository().update(article);
         operationAuditedLog.addLog(this.getModuleName(), "删除文章", article);
@@ -83,22 +85,33 @@ public class ArticleServiceImpl extends AbstractSpEditApplicationService<
     @Override
     @Transactional(rollbackFor = Exception.class)
     public PageResult<ArticleOutput> queryListPage(ArticleSelectDto input) {
-        List<ArticleOutput> list = redisService.reverseRangeWithScores("article12",input.getCurrentPage(), input.getPageSize());
+        System.out.println("getMethodSign:"+this.getMethodSign());
+        List<ArticleOutput> list = redisService.reverseRangeWithScores("article13",input.getCurrentPage(), input.getPageSize());
         if(list != null){
             System.out.println("list.size():"+list.size());
         }
         PageQueryBuilder<Article> query = new PageQueryBuilder<>(this.getQueryEntityClass());
-//        if(list!=null&&list.size()>0){
-//            return null;
-//        }
         this.generateQueryListColumn(query.getQuery());
         this.systemByCriteria(query.getQuery());
         this.queryByOrder(query.getQuery());
         query.page(input.getCurrentPage(), input.getPageSize());
         //TODO 搜索条件
+        if (input.getSendStatus() != null) {
+            // 匹配输入的id是否为数字, 不匹配则返回空
+            if (!input.isLegal(input.getSendStatus())) {
+                return emptyPageResult();
+            }
+            query.getQuery().lambda().where().eq(Article::getSendStatus, input.getSendStatus());
+        }
         PageResult<ArticleOutput> result = query.toPageResult(getQueryRepository(), this.getOutputItemClass(), this::itemConvertHandle);
-        redisService.zSetListOrderById("article12",result.getItems());
+        redisService.zSetListOrderById("article13",result.getItems());
         return result;
+    }
+
+    private Test<Article,Article> test;
+    public String test(Article input) {
+        test.createColumnExpression(Article::getSendStatus);
+        return null;
     }
 }
 

@@ -95,6 +95,7 @@ public abstract class AbstractSpEditApplicationService<
         super.updateBefore(tUpdateInput, entity, wrapper);
 //        entity.setHotelId(this.getSession().getOrganizeId());
         entity.setUpdatedAt(new Date());
+        System.out.println("getMethodSign:"+this.getMethodSign());
     }
 
     @Autowired
@@ -136,6 +137,15 @@ public abstract class AbstractSpEditApplicationService<
         page.setItems(new ArrayList<>());
         return page;
     }
-
-
+    protected String getMethodSign() {
+        String result = "";
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        for (int i = 0; i < stackTrace.length; i++) {
+            if (stackTrace[i].getMethodName().equals("getMethodSign")) {
+                result = stackTrace[i + 1].getClassName() + "." + stackTrace[i + 1].getMethodName();
+                break;
+            }
+        }
+        return result;
+    }
 }

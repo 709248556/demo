@@ -13,7 +13,7 @@ import com.example.autumn.redis.base.BaseIdDto;
  * @date 2020-6-10
  */
 public interface ArticleService extends
-        EditApplicationService<Long, ArticleInput, ArticleInput, ArticleOutput, ArticleOutput>{
+        EditApplicationService<Long, ArticleInput, ArticleInput, ArticleOutput, ArticleOutput> {
 
     /**
      * 删除
