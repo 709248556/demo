@@ -23,7 +23,7 @@ import java.util.Date;
 @Getter
 @Setter
 @Table(name = "sp_article")
-public class Article extends AbstractDefaultEntity implements SpEntity, SoftDelete, BaseEntity {
+public class Article extends AbstractDefaultEntity{
 
 
     private static final long serialVersionUID = -2024849390499317745L;
@@ -118,6 +118,4 @@ public class Article extends AbstractDefaultEntity implements SpEntity, SoftDele
      */
     @LogMessage(name = "更新日期", order = 14)
     private Date updatedAt;
-
-
 }

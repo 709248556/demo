@@ -10,12 +10,12 @@ spring:
   application:
     name: zjsm-sp-web-admin
   datasource:
-    url: jdbc:mysql://192.168.0.50:3306/zjsm-sp?characterEncoding=UTF-8&useSSL=false&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true&serverTimezone=GMT%2b8
-    username: test
-    password: 123456
+    url: jdbc:mysql://127.0.0.1:3306/zjsm-sp?characterEncoding=UTF-8&useSSL=false&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true&serverTimezone=GMT%2b8
+    username: root
+    password: root
     max-active: 50
   redis:
-    host: 192.168.0.50
+    host: 192.168.78.128
     port: 6379
     database: 12
     password: 123456
@@ -42,13 +42,13 @@ autumn:
     cacheProvider: redis
     expire: 72000
     redis:
-      host: 192.168.0.50
+      host: 192.168.78.128
       port: 6379
       database: 13
       password: 123456
   cloud:
     redis:
-      host: 192.168.0.50
+      host: 192.168.78.128
       port: 6379
       database: 12
       password: 123456
