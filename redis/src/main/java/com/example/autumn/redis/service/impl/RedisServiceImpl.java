@@ -5,10 +5,15 @@ import com.autumn.redis.AutumnRedisTemplate;
 import com.example.autumn.redis.base.ScoreFunction;
 import com.example.autumn.redis.service.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.ZSetOperations;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -60,30 +65,71 @@ public class RedisServiceImpl<T extends Entity<Long>> implements RedisService<T>
     }
 
     /**
-     * @Description: 单个添加到ZSort
+     * @Description: 单个添加到ZSort,根据ID排序
      */
     @Override
-    public void zSet(String key, T entity, ScoreFunction<Long> scoreFunction) {
-        autumnRedisTemplate.opsForZSet().add(key, entity, scoreFunction.apply());
+    public void zSetOrderById(String key, T entity, ScoreFunction<Long> scoreFunction) {
+        autumnRedisTemplate.opsForZSet().add(key, entity, transform(scoreFunction.apply()));
+    }
+
+    /**
+     * @Description: 添加集合到ZSort,根据ID排序
+     */
+    @Override
+    public void zSetListOrderById(String key, List<T> list) {
+        autumnRedisTemplate.executePipelined(new RedisCallback<Long>() {
+            @Nullable
+            @Override
+            public Long doInRedis(RedisConnection connection) throws DataAccessException {
+                connection.openPipeline();
+                list.forEach(item->{
+                    byte[] rawKey = autumnRedisTemplate.opsForCustomValue().serializeKey(key);
+                    byte[] rawValue = autumnRedisTemplate.opsForCustomValue().serializeValue(item);
+                    connection.zAdd(rawKey,transform(item.getId()),rawValue);
+                });
+                return null;
+            }
+        });
     }
 
     /**
      * @Description: 添加集合到ZSort
      */
-    @Override
-    public void zSetList(String key, List<T> list) {
-        Set<ZSetOperations.TypedTuple<T>> set = new HashSet<ZSetOperations.TypedTuple<T>>();
-        list.forEach(item->{
-            this.zSet(key,item,item::getId);
-        });
-    }
-
+//    @Override
+//    public void zSetListFuntion(String key, List<T> list,ScoreFunction<List> scoreFunction) {
+//        autumnRedisTemplate.executePipelined(new RedisCallback<Long>() {
+//            @Nullable
+//            @Override
+//            public Long doInRedis(RedisConnection connection) throws DataAccessException {
+//                connection.openPipeline();
+//                list.forEach(item->{
+//                    byte[] rawKey = autumnRedisTemplate.opsForCustomValue().serializeKey(key);
+//                    byte[] rawValue = autumnRedisTemplate.opsForCustomValue().serializeValue(item);
+//                    connection.zAdd(rawKey,item.getId(),rawValue);
+//                });
+//                return null;
+//            }
+//        });
+//    }
 
     /**
      * @Description: 获取key对应ZSet集合的大小
      */
     @Override
     public Long size(String key) {
-        return autumnRedisTemplate.opsForZSet().size(key);
+        return autumnRedisTemplate.opsForZSet().zCard(key);
+    }
+
+    @Override
+    public List<T> reverseRangeWithScores(String key,Integer currentPage,Integer pageSize) {
+        Long begin = Long.valueOf((currentPage-1)*pageSize);
+        Long end = Long.valueOf(currentPage*pageSize-1);
+        Set<ZSetOperations.TypedTuple<Object>> set =  autumnRedisTemplate.opsForZSet().reverseRangeWithScores(key,begin,end);
+        List<T> list = new ArrayList(set);
+        return list;
+    }
+
+    private double transform(Long a){
+        return new BigDecimal(a).subtract(new BigDecimal(190000000000000000L)).divide(new BigDecimal(100000000)).setScale(8).doubleValue();
     }
 }

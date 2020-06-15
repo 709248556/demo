@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 /**
  * @author yanlianglong
  * @Description:文章管理服务实现
@@ -35,7 +37,7 @@ public class ArticleServiceImpl extends AbstractSpEditApplicationService<
     @Autowired
     private OperationAuditedLog operationAuditedLog;
     @Autowired
-    private RedisService redisService;
+    private RedisService<ArticleOutput> redisService;
 
     @Override
     public String getModuleName() {
@@ -44,7 +46,7 @@ public class ArticleServiceImpl extends AbstractSpEditApplicationService<
 
     @Override
     protected void queryByOrder(EntityQueryWrapper<Article> query) {
-        query.lambda().orderByDescending(Article::getCreatedAt);
+        query.lambda().orderByDescending(Article::getId);
     }
 
     /**
@@ -57,6 +59,7 @@ public class ArticleServiceImpl extends AbstractSpEditApplicationService<
     @Override
     protected Article addBefore(ArticleInput input, EntityQueryWrapper<Article> query) {
         Article article = super.addBefore(input, query);
+        article.setSendStatus(0);
         return article;
     }
 
@@ -80,15 +83,21 @@ public class ArticleServiceImpl extends AbstractSpEditApplicationService<
     @Override
     @Transactional(rollbackFor = Exception.class)
     public PageResult<ArticleOutput> queryListPage(ArticleSelectDto input) {
+        List<ArticleOutput> list = redisService.reverseRangeWithScores("article12",input.getCurrentPage(), input.getPageSize());
+        if(list != null){
+            System.out.println("list.size():"+list.size());
+        }
         PageQueryBuilder<Article> query = new PageQueryBuilder<>(this.getQueryEntityClass());
+//        if(list!=null&&list.size()>0){
+//            return null;
+//        }
         this.generateQueryListColumn(query.getQuery());
         this.systemByCriteria(query.getQuery());
         this.queryByOrder(query.getQuery());
         query.page(input.getCurrentPage(), input.getPageSize());
         //TODO 搜索条件
         PageResult<ArticleOutput> result = query.toPageResult(getQueryRepository(), this.getOutputItemClass(), this::itemConvertHandle);
-        redisService.zSet("Article", result.getItems().get(0), result.getItems().get(0)::getId);
-        result.getItems().get(0).setSize(redisService.size("Article"));
+        redisService.zSetListOrderById("article12",result.getItems());
         return result;
     }
 }

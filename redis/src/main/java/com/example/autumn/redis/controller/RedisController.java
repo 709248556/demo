@@ -32,7 +32,7 @@ public class RedisController {
     @ApiResponses(value = {@ApiResponse(code = 1000, message = "OK")})
     @PostMapping("/zSet")
     public String set(@RequestBody ArticleInput articleInput){
-        redisService.zSet(articleInput.getId().toString(),articleInput,articleInput::getId);
+        redisService.zSetOrderById("abcd",articleInput,articleInput::getId);
         return "ok";
     }
 
@@ -47,7 +47,7 @@ public class RedisController {
     @ApiResponses(value = {@ApiResponse(code = 1000, message = "OK")})
     @GetMapping("/zSetList")
     public String redis(@RequestBody List<ArticleInput> articleInputs){
-        redisService.zSetList("Article",articleInputs);
+        redisService.zSetListOrderById("abcd",articleInputs);
         return "ok";
     }
 }
