@@ -15,10 +15,10 @@ spring:
     password: root
     max-active: 50
   redis:
-    host: 192.168.78.128
+    host: 127.0.0.1
     port: 6379
     database: 12
-    password: 123456
+    password:
   servlet:
     multipart:
       maxFileSize: 500MB
@@ -42,16 +42,16 @@ autumn:
     cacheProvider: redis
     expire: 72000
     redis:
-      host: 192.168.78.128
+      host: 127.0.0.1
       port: 6379
       database: 13
-      password: 123456
+      password:
   cloud:
     redis:
-      host: 192.168.78.128
+      host: 127.0.0.1
       port: 6379
       database: 12
-      password: 123456
+      password:
   sms:
     channel:
       aliyun:

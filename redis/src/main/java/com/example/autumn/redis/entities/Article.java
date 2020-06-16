@@ -23,7 +23,7 @@ import java.util.Date;
 @Getter
 @Setter
 @Table(name = "sp_article")
-public class Article extends AbstractDefaultEntity{
+public class Article extends AbstractDefaultEntity implements BaseEntity,SoftDelete{
 
 
     private static final long serialVersionUID = -2024849390499317745L;

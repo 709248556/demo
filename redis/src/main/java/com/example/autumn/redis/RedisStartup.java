@@ -5,10 +5,8 @@ import com.autumn.swagger.annotation.ApiGroup;
 import com.autumn.swagger.annotation.ApiHeaderParameter;
 import com.autumn.swagger.annotation.EnableAutumnSwagger;
 import com.autumn.web.annotation.EnableAutumnApiResponseBody;
-import com.autumn.zero.authorization.annotation.EnableAutumnZeroAdminAuthorizationWeb;
-import com.autumn.zero.authorization.annotation.EnableAutumnZeroAuthAuthorizationWeb;
-import com.autumn.zero.authorization.annotation.EnableAutumnZeroSmsAuthAuthorizationWeb;
-import com.autumn.zero.authorization.annotation.EnableAutumnZeroUrlPermissionInterceptor;
+import com.autumn.zero.authorization.annotation.*;
+import com.autumn.zero.common.library.annotation.EnableAutumnZeroDevCommonLibraryModuleMenu;
 import com.autumn.zero.common.library.web.annotation.EnableAutumnZeroAdminCommonLibraryWeb;
 import com.example.autumn.redis.config.AbstractWebStartup;
 import com.example.autumn.redis.config.EnableWebStartupConfigureForAdmin;
@@ -48,9 +46,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableAutumnZeroSmsAuthAuthorizationWeb  //短信登录 提供短信登录
 
 //以下注解仅限首次启动项目需启用生成框架默认表
-//@EnableAutumnZeroDevAuthorizationResourcesDefinition  //启用授权资源定义，开发时首次启动启用，主要用于后端，正式不要启用
-//@EnableAutumnZeroDevCommonAuthorizationModuleMenu     //启用共用授权资源与菜单的生成 ，开发时首次启动启用，主要用于后端，正式不要启用
-//@EnableAutumnZeroDevCommonLibraryModuleMenu    //启用公共库资源与菜单的生成 ，开发时首次启动启用，主要用于后端，正式不要启用
+@EnableAutumnZeroDevAuthorizationResourcesDefinition  //启用授权资源定义，开发时首次启动启用，主要用于后端，正式不要启用
+@EnableAutumnZeroDevCommonAuthorizationModuleMenu     //启用共用授权资源与菜单的生成 ，开发时首次启动启用，主要用于后端，正式不要启用
+@EnableAutumnZeroDevCommonLibraryModuleMenu    //启用公共库资源与菜单的生成 ，开发时首次启动启用，主要用于后端，正式不要启用
 
 @EnableScheduling                                //定时任务
 public class RedisStartup extends AbstractWebStartup {
