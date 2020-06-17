@@ -140,7 +140,7 @@ public abstract class AbstractSpEditApplicationService<
         page.setItems(new ArrayList<>());
         return page;
     }
-    protected <T> String getKey(PropertyFunc<T, ?> func,Object... value){
+    protected <T> String getKey(PropertyFunc<T, ?> func,Object value){
         try {
             // 通过获取对象方法，判断是否存在该方法
             Method method = func.getClass().getDeclaredMethod("writeReplace");
