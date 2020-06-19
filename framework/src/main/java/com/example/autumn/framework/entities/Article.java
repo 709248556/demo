@@ -88,7 +88,7 @@ public class Article extends AbstractDefaultEntity implements BaseEntity,SoftDel
 	/**
 	* 是否删除
 	*/
-	private Integer isDelete;
+//	private Integer isDelete;
 
 	/**
 	* 

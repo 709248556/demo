@@ -7,9 +7,13 @@ import com.autumn.domain.repositories.EntityRepository;
 import com.autumn.exception.ExceptionUtils;
 import com.autumn.mybatis.mapper.DefaultPageResult;
 import com.autumn.mybatis.wrapper.EntityQueryWrapper;
+import com.example.autumn.framework.test.PropertyFunc;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.lang.invoke.SerializedLambda;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -136,6 +140,88 @@ public abstract class AbstractSpEditApplicationService<
         page.setItems(new ArrayList<>());
         return page;
     }
+    protected <T> String getKey(PropertyFunc<T, ?> func,Object value){
+        try {
+            // 通过获取对象方法，判断是否存在该方法
+            Method method = func.getClass().getDeclaredMethod("writeReplace");
+            method.setAccessible(Boolean.TRUE);
+            System.out.println("getSignature(method):"+getSignature(method));
+            // 利用jdk的SerializedLambda 解析方法引用
+            SerializedLambda serializedLambda = (SerializedLambda) method.invoke(func);
+            String getter = serializedLambda.getImplMethodName();
+            return resolveFieldName(getter)+value;
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    protected String getMethodSign() {
+        String result = "";
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        for (int i = 0; i < stackTrace.length; i++) {
+            if (stackTrace[i].getMethodName().equals("getMethodSign")) {
+                result = stackTrace[i + 1].getClassName() + "." + stackTrace[i + 1].getMethodName();
+                break;
+            }
+        }
+        return result;
+    }
+    public static <T> String getFieldName(PropertyFunc<T, ?> func,Object value) {
+        try {
+            // 通过获取对象方法，判断是否存在该方法
+            Method method = func.getClass().getDeclaredMethod("writeReplace");
+            method.setAccessible(Boolean.TRUE);
+            // 利用jdk的SerializedLambda 解析方法引用
+            SerializedLambda serializedLambda = (SerializedLambda) method.invoke(func);
+            String getter = serializedLambda.getImplMethodName();
+            return resolveFieldName(getter);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    private static String resolveFieldName(String getMethodName) {
+        if (getMethodName.startsWith("get")) {
+            getMethodName = getMethodName.substring(3);
+        } else if (getMethodName.startsWith("is")) {
+            getMethodName = getMethodName.substring(2);
+        }
+        // 小写第一个字母
+        return firstToLowerCase(getMethodName);
+    }
 
-
+    private static String firstToLowerCase(String param) {
+        if (StringUtils.isBlank(param)) {
+            return "";
+        }
+        return param.substring(0, 1).toLowerCase() + param.substring(1);
+    }
+    /**
+     * 获得方法签名。
+     *
+     * 格式：returnType#方法名:参数名1,参数名2,参数名3
+     * 例如：void#checkPackageAccess:java.lang.ClassLoader,boolean
+     *
+     * @param method 方法
+     * @return 方法签名
+     */
+    protected String getSignature(Method method) {
+        StringBuilder sb = new StringBuilder();
+        // 返回类型
+        Class<?> returnType = method.getReturnType();
+        if (returnType != null) {
+            sb.append(returnType.getName()).append('#');
+        }
+        // 方法名
+        sb.append(method.getName());
+        // 方法参数
+        Class<?>[] parameters = method.getParameterTypes();
+        for (int i = 0; i < parameters.length; i++) {
+            if (i == 0) {
+                sb.append(':');
+            } else {
+                sb.append(',');
+            }
+            sb.append(parameters[i].getName());
+        }
+        return sb.toString();
+    }
 }

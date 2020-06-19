@@ -12,8 +12,14 @@ import com.example.autumn.framework.dto.Article.ArticleSelectDto;
 import com.example.autumn.framework.entities.Article;
 import com.example.autumn.framework.repositories.ArticleRepository;
 import com.example.autumn.framework.service.ArticleService;
+import com.example.autumn.framework.service.RedisService;
+import com.example.autumn.framework.test.KeyBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.xml.ws.Action;
+import java.util.List;
 
 
 /**
@@ -29,6 +35,9 @@ public class ArticleServiceImpl extends AbstractSpEditApplicationService<
         ArticleInput, ArticleInput,
         ArticleOutput, ArticleOutput>
         implements ArticleService {
+
+    @Autowired
+    private RedisService<ArticleOutput> redisService;
 
     @Override
     public String getModuleName() {
@@ -75,6 +84,15 @@ public class ArticleServiceImpl extends AbstractSpEditApplicationService<
     @Override
     @Transactional(rollbackFor = Exception.class)
     public PageResult<ArticleOutput> queryListForCusPage(ArticleSelectDto input) {
+        System.out.println("getMethodSign:"+this.getMethodSign());
+        System.out.println("this.getKey:"+this.getKey(ArticleSelectDto::getStatus,input.getStatus()));
+//        System.out.println(Thread.currentThread().getStackTrace()[1].getMethodName());
+//        this.getSignature(Thread.currentThread().getStackTrace()[1].getClass().getEnclosingMethod());
+        this.getKey(ArticleSelectDto::getStatus,input.getStatus());
+        redisService.set("article13","123456");
+        KeyBuilder keyBuilder = new KeyBuilder(this.getMethodSign());
+        keyBuilder.eq(ArticleSelectDto::getStatus,input.getStatus()).ne(ArticleSelectDto::getStatus,input.getStatus());
+        System.out.println(keyBuilder.getResult());
         Class<Article> c = this.getQueryEntityClass();
         PageQueryBuilder<Article> query = new PageQueryBuilder<>(c);
         this.generateQueryListColumn(query.getQuery());
@@ -83,6 +101,7 @@ public class ArticleServiceImpl extends AbstractSpEditApplicationService<
         query.page(input.getCurrentPage(), input.getPageSize());
         ArticleRepository t = getQueryRepository();
         Class<ArticleOutput> a = this.getOutputItemClass();
+        query.getQuery().lambda().where().eq(Article::getStatus, input.getStatus()).eq(Article::getStatus, input.getStatus());
         return query.toPageResult(t, a, this::itemConvertHandle);
     }
 }
