@@ -93,26 +93,6 @@ public class RedisServiceImpl<T extends Entity<Long>> implements RedisService<T>
     }
 
     /**
-     * @Description: 添加集合到ZSort
-     */
-//    @Override
-//    public void zSetListFuntion(String key, List<T> list,ScoreFunction<List> scoreFunction) {
-//        autumnRedisTemplate.executePipelined(new RedisCallback<Long>() {
-//            @Nullable
-//            @Override
-//            public Long doInRedis(RedisConnection connection) throws DataAccessException {
-//                connection.openPipeline();
-//                list.forEach(item->{
-//                    byte[] rawKey = autumnRedisTemplate.opsForCustomValue().serializeKey(key);
-//                    byte[] rawValue = autumnRedisTemplate.opsForCustomValue().serializeValue(item);
-//                    connection.zAdd(rawKey,item.getId(),rawValue);
-//                });
-//                return null;
-//            }
-//        });
-//    }
-
-    /**
      * @Description: 获取key对应ZSet集合的大小
      */
     @Override

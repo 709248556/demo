@@ -14,7 +14,6 @@ import com.example.autumn.redis.entities.Article;
 import com.example.autumn.redis.repositories.ArticleRepository;
 import com.example.autumn.redis.service.ArticleService;
 import com.example.autumn.redis.service.RedisService;
-import com.example.autumn.redis.test.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -106,12 +105,6 @@ public class ArticleServiceImpl extends AbstractSpEditApplicationService<
         PageResult<ArticleOutput> result = query.toPageResult(getQueryRepository(), this.getOutputItemClass(), this::itemConvertHandle);
         redisService.zSetListOrderById("article13",result.getItems());
         return result;
-    }
-
-    private Test<Article,Article> test;
-    public String test(Article input) {
-        test.createColumnExpression(Article::getSendStatus);
-        return null;
     }
 }
 
